@@ -1,0 +1,20 @@
+CREATE TABLE #tmpTable
+(
+	id int identity(1,1) primary key,
+	base VARCHAR(300),
+	CNPJ VARCHAR(50)
+);
+
+DECLARE @command varchar(1000) 
+SET @command = 'USE [?] '
+SET @command = @command + ' IF COL_LENGTH(''dbo.Produtos_template_combo'', ''PRECO'') IS NOT NULL';
+SET @command = @command + ' AND (''?'' not in (''master'',''msdb'',''tempdb'',''model'')) ';
+SET @command = @command + ' BEGIN';
+SET @command = @command + ' insert into #tmpTable VALUES (''?'', (select top 1 cnpj from lojas)); ';
+SET @command = @command + ' END';
+
+--SELECT @command;
+EXEC sp_MSforeachdb @command 
+
+SELECT * FROM #tmpTable
+DROP TABLE #tmpTable
