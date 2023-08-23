@@ -6,5 +6,10 @@ namespace AjudanteDBA
         {
             InitializeComponent();
         }
+
+        private void btnListDatabases_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
