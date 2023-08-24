@@ -12,4 +12,8 @@
     <Folder Include="Environment\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NanoXLSX" Version="2.2.0" />
+  </ItemGroup>
+
 </Project>
