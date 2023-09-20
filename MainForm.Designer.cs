@@ -32,6 +32,8 @@
             dgvDatabases = new DataGridView();
             btnExportDatabaseList = new Button();
             btnImportDatabaseList = new Button();
+            trvDatabases = new TreeView();
+            btnFazerBackup = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvDatabases).BeginInit();
             SuspendLayout();
             // 
@@ -51,8 +53,9 @@
             dgvDatabases.Location = new Point(12, 73);
             dgvDatabases.Name = "dgvDatabases";
             dgvDatabases.RowTemplate.Height = 25;
-            dgvDatabases.Size = new Size(466, 423);
+            dgvDatabases.Size = new Size(153, 395);
             dgvDatabases.TabIndex = 1;
+            dgvDatabases.Visible = false;
             // 
             // btnExportDatabaseList
             // 
@@ -62,6 +65,7 @@
             btnExportDatabaseList.TabIndex = 2;
             btnExportDatabaseList.Text = "Exportar Lista de Bancos de Dados";
             btnExportDatabaseList.UseVisualStyleBackColor = true;
+            btnExportDatabaseList.Visible = false;
             btnExportDatabaseList.Click += btnExportDatabaseList_Click;
             // 
             // btnImportDatabaseList
@@ -72,19 +76,39 @@
             btnImportDatabaseList.TabIndex = 3;
             btnImportDatabaseList.Text = "Importar Lista de Bancos de Dados";
             btnImportDatabaseList.UseVisualStyleBackColor = true;
+            btnImportDatabaseList.Visible = false;
             btnImportDatabaseList.Click += btnImportDatabaseList_Click;
+            // 
+            // trvDatabases
+            // 
+            trvDatabases.Location = new Point(35, 73);
+            trvDatabases.Name = "trvDatabases";
+            trvDatabases.Size = new Size(226, 395);
+            trvDatabases.TabIndex = 4;
+            // 
+            // btnFazerBackup
+            // 
+            btnFazerBackup.Location = new Point(267, 94);
+            btnFazerBackup.Name = "btnFazerBackup";
+            btnFazerBackup.Size = new Size(211, 23);
+            btnFazerBackup.TabIndex = 5;
+            btnFazerBackup.Text = "Fazer Backup";
+            btnFazerBackup.UseVisualStyleBackColor = true;
+            btnFazerBackup.Click += btnFazerBackup_Click;
             // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(490, 508);
+            Controls.Add(btnFazerBackup);
+            Controls.Add(trvDatabases);
             Controls.Add(btnImportDatabaseList);
             Controls.Add(btnExportDatabaseList);
             Controls.Add(dgvDatabases);
             Controls.Add(btnListDatabases);
             Name = "frmMain";
-            Text = "Form1";
+            Text = "Ajudante do DBA";
             Load += frmMain_Load;
             ((System.ComponentModel.ISupportInitialize)dgvDatabases).EndInit();
             ResumeLayout(false);
@@ -96,5 +120,7 @@
         private DataGridView dgvDatabases;
         private Button btnExportDatabaseList;
         private Button btnImportDatabaseList;
+        private TreeView trvDatabases;
+        private Button btnFazerBackup;
     }
 }

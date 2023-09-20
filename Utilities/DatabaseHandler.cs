@@ -12,5 +12,7 @@ namespace AjudanteDBA.Utilities
         public string username;
         public string password;
         public string pathToBackup;
+
+        // Acho que essa classe foi preterida, não lembro da sua razão de existir.
     }
 }

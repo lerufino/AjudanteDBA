@@ -37,7 +37,7 @@ namespace AjudanteDBA.Utilities
                 for (int row = 0; row < worksheet.GetLastRowNumber(); row++) 
                     
                 {
-                    if (!worksheet.GetCell(row, col)  == null)
+                    if (worksheet.GetCell(row, col)  != null)
                         MessageBox.Show(worksheet.GetCell(row, col)?.Value + "\t");
                 }
                 MessageBox.Show("Próxima Linha");
