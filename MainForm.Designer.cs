@@ -33,7 +33,9 @@
             btnExportDatabaseList = new Button();
             btnImportDatabaseList = new Button();
             trvDatabases = new TreeView();
-            btnFazerBackup = new Button();
+            btnBackupAndVerify = new Button();
+            btnDropDatabase = new Button();
+            lblVersion = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvDatabases).BeginInit();
             SuspendLayout();
             // 
@@ -86,22 +88,43 @@
             trvDatabases.Size = new Size(226, 395);
             trvDatabases.TabIndex = 4;
             // 
-            // btnFazerBackup
+            // btnBackupAndVerify
             // 
-            btnFazerBackup.Location = new Point(267, 94);
-            btnFazerBackup.Name = "btnFazerBackup";
-            btnFazerBackup.Size = new Size(211, 23);
-            btnFazerBackup.TabIndex = 5;
-            btnFazerBackup.Text = "Fazer Backup";
-            btnFazerBackup.UseVisualStyleBackColor = true;
-            btnFazerBackup.Click += btnFazerBackup_Click;
+            btnBackupAndVerify.Location = new Point(267, 94);
+            btnBackupAndVerify.Name = "btnBackupAndVerify";
+            btnBackupAndVerify.Size = new Size(211, 23);
+            btnBackupAndVerify.TabIndex = 5;
+            btnBackupAndVerify.Text = "Fazer Backup";
+            btnBackupAndVerify.UseVisualStyleBackColor = true;
+            btnBackupAndVerify.Click += btnBackupAndVerify_Click;
+            // 
+            // btnDropDatabase
+            // 
+            btnDropDatabase.Location = new Point(267, 134);
+            btnDropDatabase.Name = "btnDropDatabase";
+            btnDropDatabase.Size = new Size(211, 23);
+            btnDropDatabase.TabIndex = 6;
+            btnDropDatabase.Text = "Excluir Permanentemente";
+            btnDropDatabase.UseVisualStyleBackColor = true;
+            btnDropDatabase.Click += btnDropDatabase_Click;
+            // 
+            // lblVersion
+            // 
+            lblVersion.AutoSize = true;
+            lblVersion.Location = new Point(6, 487);
+            lblVersion.Name = "lblVersion";
+            lblVersion.Size = new Size(47, 15);
+            lblVersion.TabIndex = 7;
+            lblVersion.Text = "Versão: ";
             // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(490, 508);
-            Controls.Add(btnFazerBackup);
+            Controls.Add(lblVersion);
+            Controls.Add(btnDropDatabase);
+            Controls.Add(btnBackupAndVerify);
             Controls.Add(trvDatabases);
             Controls.Add(btnImportDatabaseList);
             Controls.Add(btnExportDatabaseList);
@@ -110,8 +133,10 @@
             Name = "frmMain";
             Text = "Ajudante do DBA";
             Load += frmMain_Load;
+            Shown += frmMain_Shown;
             ((System.ComponentModel.ISupportInitialize)dgvDatabases).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -121,6 +146,8 @@
         private Button btnExportDatabaseList;
         private Button btnImportDatabaseList;
         private TreeView trvDatabases;
-        private Button btnFazerBackup;
+        private Button btnBackupAndVerify;
+        private Button btnDropDatabase;
+        private Label lblVersion;
     }
 }

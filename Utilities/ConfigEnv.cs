@@ -60,7 +60,7 @@ namespace AjudanteDBA.Utilities
 
         public override string ToString()
         {
-            return $"Datasource: {Datasource},Database: {Database}, User: {User}, Caminho do Backup: {PathToBackup}.";
+            return $"Datasource: {Datasource} \nDatabase: {Database}\nUser: {User}\nCaminho do Backup: {PathToBackup}.";
         }
     }
 

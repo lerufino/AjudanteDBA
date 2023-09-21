@@ -65,27 +65,57 @@ namespace AjudanteDBA.Utilities
                 return false;
             }
         }
-        public SqlDataReader ExecuteQuery(string query)
+        public DataTable ExecuteQuery(string query)
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+                
+                OpenConnection();
+
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.InfoMessage += Connection_InfoMessage;
+                dt.Load(command.ExecuteReader());
+                return dt;
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        public bool ExecuteCommandQuery(string query)
         {
             try
             {
                 OpenConnection();
-                
+
                 SqlCommand command = new SqlCommand(query, connection);
                 connection.InfoMessage += Connection_InfoMessage;
-                return command.ExecuteReader();
+                return true;
             }
             catch (SqlException ex)
             {
-                MessageBox.Show("Erro SQL: " + ex.Message);
-                return null;
+                throw ex;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show("Erro ao executar a consulta: " + ex.Message);
-                return null;
+                throw;
+            }
+            finally
+            {
+                connection.Close();
             }
         }
+
         // Manipula as mensagens de informações do SQL Server
         private void Connection_InfoMessage(object sender, SqlInfoMessageEventArgs e)
         {
