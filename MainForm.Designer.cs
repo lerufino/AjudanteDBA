@@ -36,6 +36,7 @@
             btnBackupAndVerify = new Button();
             btnDropDatabase = new Button();
             lblVersion = new Label();
+            btnDetachDatabase = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvDatabases).BeginInit();
             SuspendLayout();
             // 
@@ -100,12 +101,13 @@
             // 
             // btnDropDatabase
             // 
-            btnDropDatabase.Location = new Point(267, 134);
+            btnDropDatabase.Location = new Point(267, 123);
             btnDropDatabase.Name = "btnDropDatabase";
             btnDropDatabase.Size = new Size(211, 23);
             btnDropDatabase.TabIndex = 6;
             btnDropDatabase.Text = "Excluir Permanentemente";
             btnDropDatabase.UseVisualStyleBackColor = true;
+            btnDropDatabase.Visible = false;
             btnDropDatabase.Click += btnDropDatabase_Click;
             // 
             // lblVersion
@@ -117,11 +119,22 @@
             lblVersion.TabIndex = 7;
             lblVersion.Text = "Versão: ";
             // 
+            // btnDetachDatabase
+            // 
+            btnDetachDatabase.Location = new Point(267, 152);
+            btnDetachDatabase.Name = "btnDetachDatabase";
+            btnDetachDatabase.Size = new Size(211, 23);
+            btnDetachDatabase.TabIndex = 8;
+            btnDetachDatabase.Text = "Desanexar Base";
+            btnDetachDatabase.UseVisualStyleBackColor = true;
+            btnDetachDatabase.Click += btnDetachDatabase_Click;
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(490, 508);
+            Controls.Add(btnDetachDatabase);
             Controls.Add(lblVersion);
             Controls.Add(btnDropDatabase);
             Controls.Add(btnBackupAndVerify);
@@ -149,5 +162,6 @@
         private Button btnBackupAndVerify;
         private Button btnDropDatabase;
         private Label lblVersion;
+        private Button btnDetachDatabase;
     }
 }

@@ -65,6 +65,30 @@ namespace AjudanteDBA.Utilities
                 return false;
             }
         }
+
+        public bool KillConnection(string database)
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                sb.Append("USE master ");
+                sb.Append("DECLARE @kill varchar(8000); SET @kill = '';");
+                sb.Append("SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), spid) + ';' ");
+                sb.Append("FROM master..sysprocesses ");
+                sb.Append($"WHERE dbid = db_id('{database}')");
+                sb.Append("EXEC(@kill); ");
+
+                ExecuteCommandQuery(sb.ToString());
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+                throw;
+            }
+        }
+
         public DataTable ExecuteQuery(string query)
         {
             try
@@ -99,7 +123,9 @@ namespace AjudanteDBA.Utilities
                 OpenConnection();
 
                 SqlCommand command = new SqlCommand(query, connection);
+                command.ExecuteNonQuery();
                 connection.InfoMessage += Connection_InfoMessage;
+
                 return true;
             }
             catch (SqlException ex)

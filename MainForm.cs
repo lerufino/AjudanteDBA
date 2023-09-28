@@ -113,8 +113,8 @@ namespace AjudanteDBA
         private void btnDropDatabase_Click(object sender, EventArgs e)
         {
 
-             if (MessageBox.Show("Essa ação é irreversível e irá afetar todos os bancos de dados selecionados.\nDeseja prosseguir?",
-                    "Aviso!", MessageBoxButtons.OKCancel) == DialogResult.OK)
+            if (MessageBox.Show("Essa ação é irreversível e irá afetar todos os bancos de dados selecionados.\nDeseja prosseguir?",
+                   "Aviso!", MessageBoxButtons.OKCancel) == DialogResult.OK)
             {
                 foreach (var db in ListCheckedDatabases())
                 {
@@ -135,8 +135,24 @@ namespace AjudanteDBA
                 PopulateTreeView();
             }
         }
-
-
+        private void btnDetachDatabase_Click(object sender, EventArgs e)
+        {
+            foreach (var db in ListCheckedDatabases())
+            {
+                try
+                {
+                    string query = SqlQueries.QueryDetach(db);
+                    sqlConnectionManager.KillConnection(db);
+                    sqlConnectionManager.ExecuteCommandQuery(query);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erro ao desanexar o banco {db}: " + ex);
+                    throw;
+                }
+            }
+            PopulateTreeView();
+        }
 
 
 
@@ -160,6 +176,6 @@ namespace AjudanteDBA
             Functions.ImportExcel();
         }
 
-       
+
     }
 }

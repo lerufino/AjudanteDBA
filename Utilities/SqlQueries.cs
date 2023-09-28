@@ -8,12 +8,12 @@ namespace AjudanteDBA.Utilities
 {
     public static class SqlQueries
     {   /// <summary>
-    /// Returns a query for backup of a database and another one to verify the integrity of this backup;
-    /// </summary>
-    /// <param name="database"></param>
-    /// <param name="pathToBackup"></param>
-    /// <param name="verify"></param>
-    /// <returns></returns>
+        /// Returns a query for backup of a database and another one to verify the integrity of this backup;
+        /// </summary>
+        /// <param name="database"></param>
+        /// <param name="pathToBackup"></param>
+        /// <param name="verify"></param>
+        /// <returns></returns>
         public static string QueryBackupAndVerify(string database, string pathToBackup, out string verify)
         {
             string date = DateTime.Now.ToString("dd.MM.yy-HH.mm");
@@ -52,5 +52,14 @@ namespace AjudanteDBA.Utilities
             sb3.Append($"DROP DATABASE [{database}]");
             return sb3.ToString();
         }
+
+        public static string QueryDetach(string database)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"ALTER DATABASE [{database}] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE ");
+            sb.Append($"EXEC master.dbo.sp_detach_db @dbname = N'{database}' ");
+            return sb.ToString();
+        }
+
     }
 }
