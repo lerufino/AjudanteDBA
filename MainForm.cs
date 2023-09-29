@@ -1,3 +1,4 @@
+using AjudanteDBA.Models;
 using AjudanteDBA.Utilities;
 using System.Data;
 
@@ -6,14 +7,14 @@ namespace AjudanteDBA
     public partial class frmMain : Form
     {
         private SqlConnectionManager sqlConnectionManager;
-        private List<string> selectedDatabases;
+        private List<ActionLogging> ActionLoggings;
 
         ConfigEnv config;
 
         public frmMain()
         {
             InitializeComponent();
-
+            ActionLoggings = new List<ActionLogging>();
         }
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -95,21 +96,39 @@ namespace AjudanteDBA
         private void btnBackupAndVerify_Click(object sender, EventArgs e)
         {
 
+
             foreach (var db in ListCheckedDatabases())
             {
                 try
                 {
+                    //sqlConnectionManager.ActionLogging = new ActionLogging(db);
+                    var actionLoggin = new ActionLogging(db);
+                    ActionLoggings.Add(actionLoggin);
+                    sqlConnectionManager.ActionLogging = actionLoggin;
                     string query = SqlQueries.QueryBackupAndVerify(db, config.PathToBackup, out string verify);
                     sqlConnectionManager.ExecuteQuery(query);
                     sqlConnectionManager.ExecuteQuery(verify);
+
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Erro no backup de {db}: " + ex);
                 }
+
             }
+
+            dgvResult.DataSource = ActionLoggings.ToList();
+            dgvResult.Columns["SqlEvents"].Visible = false;
+            dgvResult.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            //foreach (var actionLog in ActionLoggings)
+            //{
+
+
+            //    //MessageBox.Show(actionLog.DatabaseName + " " + actionLog.SqlEvents.Count.ToString() + " " + actionLog.Success);
+            //}
         }
-        // TODO: Não está funcionando corretamente, revisar!
+
         private void btnDropDatabase_Click(object sender, EventArgs e)
         {
 
@@ -154,7 +173,13 @@ namespace AjudanteDBA
             PopulateTreeView();
         }
 
-
+        private void dgvResult_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            var result = dgvResult.CurrentRow.Cells["SqlEvents"].Value;
+            dgvResultDetails.DataSource = result;
+            //dgvResultDetails.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvResultDetails.Columns[0].Width = 55;
+        }
 
 
 
@@ -176,6 +201,6 @@ namespace AjudanteDBA
             Functions.ImportExcel();
         }
 
-
+       
     }
 }

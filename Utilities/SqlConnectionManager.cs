@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using AjudanteDBA.Models;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,6 +13,8 @@ namespace AjudanteDBA.Utilities
 {
     public class SqlConnectionManager
     {
+        public ActionLogging? ActionLogging { get; set; }
+
         private SqlConnection connection;
         public SqlConnectionManager(ConfigEnv configEnv)
         {
@@ -94,7 +97,7 @@ namespace AjudanteDBA.Utilities
             try
             {
                 DataTable dt = new DataTable();
-                
+
                 OpenConnection();
 
                 SqlCommand command = new SqlCommand(query, connection);
@@ -145,11 +148,16 @@ namespace AjudanteDBA.Utilities
         // Manipula as mensagens de informações do SQL Server
         private void Connection_InfoMessage(object sender, SqlInfoMessageEventArgs e)
         {
-            foreach (SqlError error in e.Errors)
-            {
-                MessageBox.Show("Mensagem do SQL Server: " + error.Message);
-                // Pode adicionar lógica adicional para tratamento de mensagens de informações aqui
-            }
+            if (ActionLogging != null)
+                foreach (SqlError error in e.Errors)
+                {
+                    ActionLogging.SqlEvents.Add(new SqlEvent(error.Number, error.Message));
+
+                    if (error.Number == 3014)
+                        ActionLogging.Success = true;
+                }
+                    
+            
         }
     }
 

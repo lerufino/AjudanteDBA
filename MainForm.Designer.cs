@@ -37,7 +37,11 @@
             btnDropDatabase = new Button();
             lblVersion = new Label();
             btnDetachDatabase = new Button();
+            dgvResult = new DataGridView();
+            dgvResultDetails = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)dgvDatabases).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvResult).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvResultDetails).BeginInit();
             SuspendLayout();
             // 
             // btnListDatabases
@@ -86,7 +90,7 @@
             // 
             trvDatabases.Location = new Point(35, 73);
             trvDatabases.Name = "trvDatabases";
-            trvDatabases.Size = new Size(226, 395);
+            trvDatabases.Size = new Size(226, 466);
             trvDatabases.TabIndex = 4;
             // 
             // btnBackupAndVerify
@@ -113,7 +117,7 @@
             // lblVersion
             // 
             lblVersion.AutoSize = true;
-            lblVersion.Location = new Point(6, 487);
+            lblVersion.Location = new Point(12, 542);
             lblVersion.Name = "lblVersion";
             lblVersion.Size = new Size(47, 15);
             lblVersion.TabIndex = 7;
@@ -129,11 +133,32 @@
             btnDetachDatabase.UseVisualStyleBackColor = true;
             btnDetachDatabase.Click += btnDetachDatabase_Click;
             // 
+            // dgvResult
+            // 
+            dgvResult.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvResult.Location = new Point(267, 192);
+            dgvResult.Name = "dgvResult";
+            dgvResult.RowTemplate.Height = 25;
+            dgvResult.Size = new Size(304, 347);
+            dgvResult.TabIndex = 9;
+            dgvResult.CellEnter += dgvResult_CellEnter;
+            // 
+            // dgvResultDetails
+            // 
+            dgvResultDetails.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvResultDetails.Location = new Point(577, 12);
+            dgvResultDetails.Name = "dgvResultDetails";
+            dgvResultDetails.RowTemplate.Height = 25;
+            dgvResultDetails.Size = new Size(491, 527);
+            dgvResultDetails.TabIndex = 10;
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(490, 508);
+            ClientSize = new Size(1080, 566);
+            Controls.Add(dgvResultDetails);
+            Controls.Add(dgvResult);
             Controls.Add(btnDetachDatabase);
             Controls.Add(lblVersion);
             Controls.Add(btnDropDatabase);
@@ -148,6 +173,8 @@
             Load += frmMain_Load;
             Shown += frmMain_Shown;
             ((System.ComponentModel.ISupportInitialize)dgvDatabases).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvResult).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvResultDetails).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -163,5 +190,7 @@
         private Button btnDropDatabase;
         private Label lblVersion;
         private Button btnDetachDatabase;
+        private DataGridView dgvResult;
+        private DataGridView dgvResultDetails;
     }
 }
