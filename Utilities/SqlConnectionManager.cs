@@ -145,6 +145,30 @@ namespace AjudanteDBA.Utilities
             }
         }
 
+        public object? ExecuteScalarQuery(string query)
+        {
+            try
+            {
+                OpenConnection();
+
+                SqlCommand command = new SqlCommand(query, connection);
+                
+                return command.ExecuteScalar(); 
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
         // Manipula as mensagens de informações do SQL Server
         private void Connection_InfoMessage(object sender, SqlInfoMessageEventArgs e)
         {

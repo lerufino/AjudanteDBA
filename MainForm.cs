@@ -8,6 +8,7 @@ namespace AjudanteDBA
     {
         private SqlConnectionManager sqlConnectionManager;
         private List<ActionLogging> ActionLoggings;
+        private List<string> DetachedDatabases = new List<string>();
 
         ConfigEnv config;
 
@@ -90,12 +91,15 @@ namespace AjudanteDBA
 
         private void btnListDatabases_Click(object sender, EventArgs e)
         {
+            pnlBlackBox.Visible = false;
             PopulateTreeView();
+            pnlBlackBox.Visible = true;
         }
 
         private void btnBackupAndVerify_Click(object sender, EventArgs e)
         {
-
+            pnlBlackBox.Visible = false;
+            Application.DoEvents();
 
             foreach (var db in ListCheckedDatabases())
             {
@@ -121,20 +125,17 @@ namespace AjudanteDBA
             dgvResult.Columns["SqlEvents"].Visible = false;
             dgvResult.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            //foreach (var actionLog in ActionLoggings)
-            //{
-
-
-            //    //MessageBox.Show(actionLog.DatabaseName + " " + actionLog.SqlEvents.Count.ToString() + " " + actionLog.Success);
-            //}
+            pnlBlackBox.Visible = true;
         }
 
         private void btnDropDatabase_Click(object sender, EventArgs e)
         {
+            pnlBlackBox.Visible = false;
 
             if (MessageBox.Show("Essa ação é irreversível e irá afetar todos os bancos de dados selecionados.\nDeseja prosseguir?",
                    "Aviso!", MessageBoxButtons.OKCancel) == DialogResult.OK)
             {
+                DetachedDatabases.Clear();
                 foreach (var db in ListCheckedDatabases())
                 {
                     try
@@ -143,6 +144,8 @@ namespace AjudanteDBA
                         sqlConnectionManager.ExecuteCommandQuery(_1deleteHistory);
                         sqlConnectionManager.ExecuteCommandQuery(_2discardConnections);
                         sqlConnectionManager.ExecuteCommandQuery(query);
+
+                        DetachedDatabases.Add(PathToDatabaseFiles(db));
 
                     }
                     catch (Exception ex)
@@ -153,16 +156,22 @@ namespace AjudanteDBA
                 }
                 PopulateTreeView();
             }
+            pnlBlackBox.Visible = true;
         }
         private void btnDetachDatabase_Click(object sender, EventArgs e)
         {
+            pnlBlackBox.Visible = false;
+
+            DetachedDatabases.Clear();
             foreach (var db in ListCheckedDatabases())
             {
                 try
                 {
                     string query = SqlQueries.QueryDetach(db);
+                    DetachedDatabases.Add(PathToDatabaseFiles(db));
                     sqlConnectionManager.KillConnection(db);
                     sqlConnectionManager.ExecuteCommandQuery(query);
+
                 }
                 catch (Exception ex)
                 {
@@ -170,7 +179,69 @@ namespace AjudanteDBA
                     throw;
                 }
             }
-            PopulateTreeView();
+            MessageBox.Show("Os bancos de dados selecionados foram desanexados com sucesso.");
+            pnlBlackBox.Visible = true;
+        }
+
+        private void btnMoveFiles_Click(object sender, EventArgs e)
+        {
+            pnlBlackBox.Visible = false;
+            if (DetachedDatabases.Count > 0)
+            {
+                foreach (var detachedPath in DetachedDatabases)
+                {
+                    try
+                    {
+                        MoveDatabaseFiles(detachedPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Erro ao mover os arquivos: " + ex);
+                        throw;
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Não há bancos de dados para ser movidos");
+            }
+
+        }
+
+        // Busca caminho do arquivo .MDF
+        public string PathToDatabaseFiles(string database)
+        {
+            var query = SqlQueries.QueryDatabaseFilePath(database);
+
+            var result = sqlConnectionManager.ExecuteScalarQuery(query);
+            return result?.ToString() ?? string.Empty;
+        }
+
+        public void MoveDatabaseFiles(string detachedPath)
+        {
+            string destinationPath = Path.Combine(config.PathToBackup, "MDF e LDF");
+            string mdfPath = detachedPath;
+            string ldfPath = Path.ChangeExtension(mdfPath, ".ldf");
+
+            // Verifica se os diretórios existem
+            if (!Directory.Exists(Path.GetDirectoryName(mdfPath)))
+            {
+                throw new DirectoryNotFoundException("Diretório de origem não encontrado!");
+            }
+            if (!Directory.Exists(destinationPath))
+            {
+                Directory.CreateDirectory(destinationPath);
+            }
+
+            try
+            {
+                File.Move(mdfPath, destinationPath);
+                File.Move(ldfPath, destinationPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao mover os arquivos: " + ex);
+            }
         }
 
         private void dgvResult_CellEnter(object sender, DataGridViewCellEventArgs e)
@@ -186,11 +257,13 @@ namespace AjudanteDBA
 
 
 
-
-
-
-
         // Vou retomar essa parte do código mais tarde. Por hora, opto por usar o treeview apenas.
+        //
+        /// 
+        /// 
+        /// 
+        /// 
+        /// 
         private void btnExportDatabaseList_Click(object sender, EventArgs e)
         {
             Functions.ExportToExcel();
@@ -201,6 +274,6 @@ namespace AjudanteDBA
             Functions.ImportExcel();
         }
 
-       
+
     }
 }
