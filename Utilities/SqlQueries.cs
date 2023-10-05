@@ -65,7 +65,7 @@ namespace AjudanteDBA.Utilities
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"SELECT physical_name FROM sys.master_files ");
-            sb.Append($"WHERE database_id = DB_ID('{database}') AND type = 0 ");
+            sb.Append($"WHERE database_id = DB_ID('{database}') ");
             return sb.ToString();
         }
     }

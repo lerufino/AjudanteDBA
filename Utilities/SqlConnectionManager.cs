@@ -152,7 +152,6 @@ namespace AjudanteDBA.Utilities
                 OpenConnection();
 
                 SqlCommand command = new SqlCommand(query, connection);
-                
                 return command.ExecuteScalar(); 
             }
             catch (SqlException ex)

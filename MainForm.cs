@@ -8,7 +8,7 @@ namespace AjudanteDBA
     {
         private SqlConnectionManager sqlConnectionManager;
         private List<ActionLogging> ActionLoggings;
-        private List<string> DetachedDatabases = new List<string>();
+        private List<Database> DetachedDatabases = new List<Database>();
 
         ConfigEnv config;
 
@@ -188,11 +188,11 @@ namespace AjudanteDBA
             pnlBlackBox.Visible = false;
             if (DetachedDatabases.Count > 0)
             {
-                foreach (var detachedPath in DetachedDatabases)
+                foreach (var dbModel in DetachedDatabases)
                 {
                     try
                     {
-                        MoveDatabaseFiles(detachedPath);
+                        MoveDatabaseFiles(dbModel);
                     }
                     catch (Exception ex)
                     {
@@ -205,38 +205,50 @@ namespace AjudanteDBA
             {
                 MessageBox.Show("Não há bancos de dados para ser movidos");
             }
+            pnlBlackBox.Visible = true;
+            MessageBox.Show("Tarefa concluída.");
 
         }
 
-        // Busca caminho do arquivo .MDF
-        public string PathToDatabaseFiles(string database)
+        // Busca caminho dos arquivos .MDF e .LDF de determinado banco de dados
+        public Database PathToDatabaseFiles(string database)
         {
             var query = SqlQueries.QueryDatabaseFilePath(database);
+            var queryResult = sqlConnectionManager.ExecuteQuery(query);
 
-            var result = sqlConnectionManager.ExecuteScalarQuery(query);
-            return result?.ToString() ?? string.Empty;
+            Database dbModel = new()
+            {
+                TableName = database
+            };
+
+            foreach (DataRow row in queryResult.Rows)
+            {
+                var value = row[0].ToString();
+                if(value != null)
+                {
+                    dbModel.FilePaths.Add(value);
+                }
+            }
+
+            return dbModel;
         }
 
-        public void MoveDatabaseFiles(string detachedPath)
+        public void MoveDatabaseFiles(Database db)
         {
             string destinationPath = Path.Combine(config.PathToBackup, "MDF e LDF");
-            string mdfPath = detachedPath;
-            string ldfPath = Path.ChangeExtension(mdfPath, ".ldf");
-
-            // Verifica se os diretórios existem
-            if (!Directory.Exists(Path.GetDirectoryName(mdfPath)))
-            {
-                throw new DirectoryNotFoundException("Diretório de origem não encontrado!");
-            }
-            if (!Directory.Exists(destinationPath))
-            {
-                Directory.CreateDirectory(destinationPath);
-            }
-
+            
             try
             {
-                File.Move(mdfPath, destinationPath);
-                File.Move(ldfPath, destinationPath);
+                if (!Directory.Exists(destinationPath))
+                {
+                    Directory.CreateDirectory(destinationPath);
+                }
+
+                foreach (var file in db.FilePaths)
+                {
+                    var destinationFilePath = Path.Combine(destinationPath, Path.GetFileName(file));
+                    File.Move(file, destinationFilePath);
+                }                
             }
             catch (Exception ex)
             {
