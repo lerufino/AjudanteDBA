@@ -10,12 +10,33 @@ namespace AjudanteDBA
         private List<ActionLogging> ActionLoggings;
         private List<Database> DetachedDatabases = new List<Database>();
 
+        private double _elapsed = 1;
         ConfigEnv config;
 
         public frmMain()
         {
             InitializeComponent();
             ActionLoggings = new List<ActionLogging>();
+            InitializeGrids();
+
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            TimeSpan ts = TimeSpan.FromSeconds(_elapsed);
+            lblTimeElapsed.Text = ts.ToString(@"hh\:mm\:ss");
+
+            _elapsed += 1;
+        }
+
+
+        private void InitializeGrids()
+        {
+            dgvResultBackup.Dock = DockStyle.Fill;
+            //dgvResultBackup.DataSource = ActionLoggings.ToList();
+            dgvResultDetach.Dock = DockStyle.Fill;
+            dgvResultMove.Dock = DockStyle.Fill;
+
         }
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -96,13 +117,27 @@ namespace AjudanteDBA
             pnlBlackBox.Visible = true;
         }
 
-        private void btnBackupAndVerify_Click(object sender, EventArgs e)
+        private async void btnBackupAndVerify_Click(object sender, EventArgs e)
+        {
+            _elapsed = 1;
+            timer1.Start();
+            await StartBackup();
+            timer1.Stop();
+
+        }
+
+        private async Task StartBackup()
         {
             pnlBlackBox.Visible = false;
-            Application.DoEvents();
+            ActionLoggings.Clear();
+            dgvResultBackup.BringToFront();
+
 
             foreach (var db in ListCheckedDatabases())
             {
+                //await Task.Run(() => Thread.Sleep(1000));
+                Thread.Sleep(1000);
+
                 try
                 {
                     //sqlConnectionManager.ActionLogging = new ActionLogging(db);
@@ -110,8 +145,8 @@ namespace AjudanteDBA
                     ActionLoggings.Add(actionLoggin);
                     sqlConnectionManager.ActionLogging = actionLoggin;
                     string query = SqlQueries.QueryBackupAndVerify(db, config.PathToBackup, out string verify);
-                    sqlConnectionManager.ExecuteQuery(query);
-                    sqlConnectionManager.ExecuteQuery(verify);
+                    await sqlConnectionManager.ExecuteQueryAsync(query);
+                    await sqlConnectionManager.ExecuteQueryAsync(verify);
 
                 }
                 catch (Exception ex)
@@ -120,17 +155,19 @@ namespace AjudanteDBA
                 }
 
             }
-
-            dgvResult.DataSource = ActionLoggings.ToList();
-            dgvResult.Columns["SqlEvents"].Visible = false;
-            dgvResult.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvResultBackup.DataSource = ActionLoggings.ToList();
+            dgvResultBackup.Columns["SqlEvents"].Visible = false;
+            dgvResultBackup.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             pnlBlackBox.Visible = true;
+
+            //timer1.Stop();
         }
 
         private void btnDropDatabase_Click(object sender, EventArgs e)
         {
             pnlBlackBox.Visible = false;
+            Application.DoEvents();
 
             if (MessageBox.Show("Essa ação é irreversível e irá afetar todos os bancos de dados selecionados.\nDeseja prosseguir?",
                    "Aviso!", MessageBoxButtons.OKCancel) == DialogResult.OK)
@@ -162,6 +199,9 @@ namespace AjudanteDBA
         {
             pnlBlackBox.Visible = false;
 
+            dgvResultDetach.BringToFront();
+            Application.DoEvents();
+
             DetachedDatabases.Clear();
             foreach (var db in ListCheckedDatabases())
             {
@@ -179,8 +219,12 @@ namespace AjudanteDBA
                     throw;
                 }
             }
+            dgvResultDetach.DataSource = DetachedDatabases;
+            dgvResultDetach.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
             MessageBox.Show("Os bancos de dados selecionados foram desanexados com sucesso.");
             pnlBlackBox.Visible = true;
+            Application.DoEvents();
         }
 
         private void btnMoveFiles_Click(object sender, EventArgs e)
@@ -224,7 +268,7 @@ namespace AjudanteDBA
             foreach (DataRow row in queryResult.Rows)
             {
                 var value = row[0].ToString();
-                if(value != null)
+                if (value != null)
                 {
                     dbModel.FilePaths.Add(value);
                 }
@@ -236,7 +280,7 @@ namespace AjudanteDBA
         public void MoveDatabaseFiles(Database db)
         {
             string destinationPath = Path.Combine(config.PathToBackup, "MDF e LDF");
-            
+
             try
             {
                 if (!Directory.Exists(destinationPath))
@@ -248,7 +292,7 @@ namespace AjudanteDBA
                 {
                     var destinationFilePath = Path.Combine(destinationPath, Path.GetFileName(file));
                     File.Move(file, destinationFilePath);
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -258,10 +302,13 @@ namespace AjudanteDBA
 
         private void dgvResult_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
-            var result = dgvResult.CurrentRow.Cells["SqlEvents"].Value;
+
+            var result = dgvResultBackup.CurrentRow.Cells["SqlEvents"].Value;
             dgvResultDetails.DataSource = result;
             //dgvResultDetails.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvResultDetails.Columns[0].Width = 55;
+
+
         }
 
 

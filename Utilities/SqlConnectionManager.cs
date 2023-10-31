@@ -119,6 +119,34 @@ namespace AjudanteDBA.Utilities
             }
         }
 
+        public async Task<DataTable> ExecuteQueryAsync(string query)
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+
+                OpenConnection();
+
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.InfoMessage += Connection_InfoMessage;
+                var reader = await command.ExecuteReaderAsync();
+                dt.Load(reader);
+                return dt;
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
         public bool ExecuteCommandQuery(string query)
         {
             try
