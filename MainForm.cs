@@ -33,7 +33,6 @@ namespace AjudanteDBA
         private void InitializeGrids()
         {
             dgvResultBackup.Dock = DockStyle.Fill;
-            //dgvResultBackup.DataSource = ActionLoggings.ToList();
             dgvResultDetach.Dock = DockStyle.Fill;
             dgvResultMove.Dock = DockStyle.Fill;
 
@@ -121,12 +120,12 @@ namespace AjudanteDBA
         {
             _elapsed = 1;
             timer1.Start();
-            await StartBackup();
+            await StartBackupAsync();
             timer1.Stop();
 
         }
 
-        private async Task StartBackup()
+        private async Task StartBackupAsync()
         {
             pnlBlackBox.Visible = false;
             ActionLoggings.Clear();
@@ -135,12 +134,8 @@ namespace AjudanteDBA
 
             foreach (var db in ListCheckedDatabases())
             {
-                //await Task.Run(() => Thread.Sleep(1000));
-                Thread.Sleep(1000);
-
                 try
                 {
-                    //sqlConnectionManager.ActionLogging = new ActionLogging(db);
                     var actionLoggin = new ActionLogging(db);
                     ActionLoggings.Add(actionLoggin);
                     sqlConnectionManager.ActionLogging = actionLoggin;
@@ -160,8 +155,6 @@ namespace AjudanteDBA
             dgvResultBackup.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             pnlBlackBox.Visible = true;
-
-            //timer1.Stop();
         }
 
         private void btnDropDatabase_Click(object sender, EventArgs e)
@@ -195,7 +188,15 @@ namespace AjudanteDBA
             }
             pnlBlackBox.Visible = true;
         }
-        private void btnDetachDatabase_Click(object sender, EventArgs e)
+        private async void btnDetachDatabase_Click(object sender, EventArgs e)
+        {
+            _elapsed = 1;
+            timer1.Start();
+            await StartDetachAsync();
+            timer1.Stop();
+        }
+
+        private async Task StartDetachAsync()
         {
             pnlBlackBox.Visible = false;
 
@@ -210,7 +211,7 @@ namespace AjudanteDBA
                     string query = SqlQueries.QueryDetach(db);
                     DetachedDatabases.Add(PathToDatabaseFiles(db));
                     sqlConnectionManager.KillConnection(db);
-                    sqlConnectionManager.ExecuteCommandQuery(query);
+                    await sqlConnectionManager.ExecuteCommandQueryAsync(query);
 
                 }
                 catch (Exception ex)
@@ -227,7 +228,15 @@ namespace AjudanteDBA
             Application.DoEvents();
         }
 
-        private void btnMoveFiles_Click(object sender, EventArgs e)
+        private async void btnMoveFiles_Click(object sender, EventArgs e)
+        {
+            _elapsed = 1;
+            timer1.Start();
+            await StartMoveFilesAsync();
+            timer1.Stop();
+        }
+
+        private async Task StartMoveFilesAsync()
         {
             pnlBlackBox.Visible = false;
             if (DetachedDatabases.Count > 0)
@@ -236,7 +245,7 @@ namespace AjudanteDBA
                 {
                     try
                     {
-                        MoveDatabaseFiles(dbModel);
+                        await MoveDatabaseFiles(dbModel);
                     }
                     catch (Exception ex)
                     {
@@ -251,7 +260,6 @@ namespace AjudanteDBA
             }
             pnlBlackBox.Visible = true;
             MessageBox.Show("Tarefa concluída.");
-
         }
 
         // Busca caminho dos arquivos .MDF e .LDF de determinado banco de dados
@@ -277,7 +285,7 @@ namespace AjudanteDBA
             return dbModel;
         }
 
-        public void MoveDatabaseFiles(Database db)
+        public async Task MoveDatabaseFiles(Database db)
         {
             string destinationPath = Path.Combine(config.PathToBackup, "MDF e LDF");
 
@@ -291,7 +299,7 @@ namespace AjudanteDBA
                 foreach (var file in db.FilePaths)
                 {
                     var destinationFilePath = Path.Combine(destinationPath, Path.GetFileName(file));
-                    File.Move(file, destinationFilePath);
+                    await Task.Run(() => File.Move(file, destinationFilePath));
                 }
             }
             catch (Exception ex)
@@ -302,13 +310,9 @@ namespace AjudanteDBA
 
         private void dgvResult_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
-
             var result = dgvResultBackup.CurrentRow.Cells["SqlEvents"].Value;
             dgvResultDetails.DataSource = result;
-            //dgvResultDetails.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvResultDetails.Columns[0].Width = 55;
-
-
         }
 
 
@@ -333,6 +337,19 @@ namespace AjudanteDBA
             Functions.ImportExcel();
         }
 
-
+        private void label2_MouseClick(object sender, MouseEventArgs e)
+        {
+            foreach (TreeNode node in trvDatabases.Nodes)
+            {
+                if (node.Checked)
+                {
+                    node.Checked = false;
+                }
+                else
+                {
+                    node.Checked = true;
+                }
+            }
+        }
     }
 }

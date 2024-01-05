@@ -19,7 +19,7 @@ namespace AjudanteDBA.Utilities
         public SqlConnectionManager(ConfigEnv configEnv)
         {
             string conn =
-                $"Data Source={configEnv.Datasource};Initial Catalog=master;User ID={configEnv.User};Password={configEnv.Password};TrustServerCertificate=True;Trusted_Connection=True";
+                $"Data Source={configEnv.Datasource};Initial Catalog=master;User ID={configEnv.User};Password={configEnv.Password};TrustServerCertificate=True"; // Trusted_Connection=True
             this.connection = new SqlConnection(conn);
         }
 
@@ -101,6 +101,7 @@ namespace AjudanteDBA.Utilities
                 OpenConnection();
 
                 SqlCommand command = new SqlCommand(query, connection);
+                command.CommandTimeout = 0;
                 connection.InfoMessage += Connection_InfoMessage;
                 dt.Load(command.ExecuteReader());
                 return dt;
@@ -128,6 +129,7 @@ namespace AjudanteDBA.Utilities
                 OpenConnection();
 
                 SqlCommand command = new SqlCommand(query, connection);
+                command.CommandTimeout = 0;
                 connection.InfoMessage += Connection_InfoMessage;
                 var reader = await command.ExecuteReaderAsync();
                 dt.Load(reader);
@@ -154,7 +156,35 @@ namespace AjudanteDBA.Utilities
                 OpenConnection();
 
                 SqlCommand command = new SqlCommand(query, connection);
+                command.CommandTimeout = 0;
                 command.ExecuteNonQuery();
+                connection.InfoMessage += Connection_InfoMessage;
+
+                return true;
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        public async Task<bool> ExecuteCommandQueryAsync(string query)
+        {
+            try
+            {
+                OpenConnection();
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.CommandTimeout = 0;
+                await command.ExecuteNonQueryAsync();
                 connection.InfoMessage += Connection_InfoMessage;
 
                 return true;
@@ -180,6 +210,7 @@ namespace AjudanteDBA.Utilities
                 OpenConnection();
 
                 SqlCommand command = new SqlCommand(query, connection);
+                command.CommandTimeout = 0;
                 return command.ExecuteScalar(); 
             }
             catch (SqlException ex)

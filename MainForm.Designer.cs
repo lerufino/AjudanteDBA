@@ -50,6 +50,8 @@
             dgvResultMove = new DataGridView();
             dgvResultDetach = new DataGridView();
             timer1 = new System.Windows.Forms.Timer(components);
+            label2 = new Label();
+            label3 = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvDatabases).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvResultBackup).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvResultDetails).BeginInit();
@@ -73,10 +75,10 @@
             // dgvDatabases
             // 
             dgvDatabases.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvDatabases.Location = new Point(5, 73);
+            dgvDatabases.Location = new Point(5, 90);
             dgvDatabases.Name = "dgvDatabases";
             dgvDatabases.RowTemplate.Height = 25;
-            dgvDatabases.Size = new Size(153, 395);
+            dgvDatabases.Size = new Size(153, 378);
             dgvDatabases.TabIndex = 1;
             dgvDatabases.Visible = false;
             // 
@@ -104,16 +106,16 @@
             // 
             // trvDatabases
             // 
-            trvDatabases.Location = new Point(12, 73);
+            trvDatabases.Location = new Point(12, 90);
             trvDatabases.Name = "trvDatabases";
-            trvDatabases.Size = new Size(249, 466);
+            trvDatabases.Size = new Size(249, 449);
             trvDatabases.TabIndex = 4;
             // 
             // btnBackupAndVerify
             // 
             btnBackupAndVerify.Location = new Point(266, 73);
             btnBackupAndVerify.Name = "btnBackupAndVerify";
-            btnBackupAndVerify.Size = new Size(305, 23);
+            btnBackupAndVerify.Size = new Size(107, 23);
             btnBackupAndVerify.TabIndex = 5;
             btnBackupAndVerify.Text = "Fazer Backup";
             btnBackupAndVerify.UseVisualStyleBackColor = true;
@@ -250,12 +252,35 @@
             timer1.Interval = 1000;
             timer1.Tick += timer1_Tick;
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label2.Location = new Point(12, 72);
+            label2.Name = "label2";
+            label2.Size = new Size(107, 15);
+            label2.TabIndex = 17;
+            label2.Text = "Inverter a seleção";
+            label2.MouseClick += label2_MouseClick;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            label3.Location = new Point(577, 9);
+            label3.Name = "label3";
+            label3.Size = new Size(111, 21);
+            label3.TabIndex = 18;
+            label3.Text = "Processando ...";
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
             ClientSize = new Size(1080, 566);
+            Controls.Add(label3);
+            Controls.Add(label2);
             Controls.Add(panel1);
             Controls.Add(lblTimeElapsed);
             Controls.Add(label1);
@@ -309,5 +334,7 @@
         private DataGridView dgvResultDetach;
         private DataGridView dgvResultMove;
         private System.Windows.Forms.Timer timer1;
+        private Label label2;
+        private Label label3;
     }
 }
